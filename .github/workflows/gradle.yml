@@ -39,8 +39,7 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
 
-      ## gitignore한 파일 생성해주기
-      ## create application.properties
+      # create application.properties
       - name: make application-aws.properties
         if: true # branch가 develop일 때
         run: |
@@ -62,12 +61,7 @@ jobs:
         with:
           arguments: build
 
-      # 프로젝트 zip파일로 압축
-      - name: Make Zip File
-        run: zip -qq -r ./$GITHUB_SHA.zip .
-        shell: bash
-
-      #aws 접근 id, key
+      # AWS 인증 (IAM 사용자 Access Key, Secret Key 활용)
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -75,23 +69,20 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # s3에 압축한 zip파일 업로드
-      - name: Upload to S3
-        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$S3_BUCKET_NAME/$PROJECT_NAME/$GITHUB_SHA.zip
+      # 빌드 결과물을 S3 버킷에 업로드
+      - name: Upload to AWS S3
+        run: |
+          aws deploy push \
+            --application-name ${{ env.CODE_DEPLOY_APP_NAME }} \
+            --ignore-hidden-files \
+            --s3-location s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip \
+            --source .
 
-        #      - name: Upload to AWS S3
-#        run: |
-#          aws deploy push \
-#            --application-name ${{ env.CODE_DEPLOY_APP_NAME }} \
-#            --ignore-hidden-files \
-#            --s3-location s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip \
-#            --source .
-
-        # s3에 업로드한 파일 code Deploy에서 배포 요청
-      - name: Code Deploy
+      # S3 버킷에 있는 파일을 대상으로 CodeDeploy 실행
+      - name: Deploy to AWS EC2 from S3
         run: |
           aws deploy create-deployment \
             --application-name ${{ env.CODE_DEPLOY_APP_NAME }} \
-            --deployment-config-name CodeDeployDefault.OneAtATime \
-            --deployment-group-name ${{ env.DEPLOYMENT_GROUP_NAME }} \
-            --s3-location bucket=${{ env.S3_BUCKET_NAME }},bundleType=zip, key=${{ env.PROJECT_NAME }}/$GITHUB_SHA.zip
+            --deployment-config-name CodeDeployDefault.AllAtOnce \
+            --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
+            --s3-location bucket=$S3_BUCKET_NAME,key=$GITHUB_SHA.zip,bundleType=zip
