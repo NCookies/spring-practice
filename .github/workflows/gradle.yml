@@ -17,7 +17,7 @@ on:
 env:
   AWS_REGION: ap-northeast-2
   PROJECT_NAME: spring-practice
-  BUCKET_NAME: ncookie-github-actions-s3-bucket
+  S3_BUCKET_NAME: ncookie-github-actions-s3-bucket
   CODE_DEPLOY_APP_NAME: codedeploy-app
   DEPLOYMENT_GROUP_NAME: codedeploy-deployment-group
 
@@ -56,6 +56,7 @@ jobs:
         run: chmod +x ./gradlew
         shell: bash
 
+      # Gradle build (Test 제외)
       - name: Build with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
@@ -63,7 +64,7 @@ jobs:
 
       # 프로젝트 zip파일로 압축
       - name: Make Zip File
-        run: zip -qq -r ./${{ env.GITHUB_SHA }}.zip .
+        run: zip -qq -r ./$GITHUB_SHA.zip .
         shell: bash
 
       #aws 접근 id, key
@@ -76,7 +77,16 @@ jobs:
 
       # s3에 압축한 zip파일 업로드
       - name: Upload to S3
-        run: aws s3 cp --region ${{ env.AWS_REGION }} ./$GITHUB_SHA.zip s3://${{ env.BUCKET_NAME }}/${{ env.PROJECT_NAME }}/$GITHUB_SHA.zip
+        run: aws s3 cp --region ${{ env.AWS_REGION }} \
+          ./$GITHUB_SHA.zip s3://${{ env.S3_BUCKET_NAME }}/${{ env.PROJECT_NAME }}/$GITHUB_SHA.zip
+
+#      - name: Upload to AWS S3
+#        run: |
+#          aws deploy push \
+#            --application-name ${{ env.CODE_DEPLOY_APP_NAME }} \
+#            --ignore-hidden-files \
+#            --s3-location s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip \
+#            --source .
 
         # s3에 업로드한 파일 code Deploy에서 배포 요청
       - name: Code Deploy
@@ -84,4 +94,4 @@ jobs:
           --application-name ${{ env.CODE_DEPLOY_APP_NAME }} \
           --deployment-config-name CodeDeployDefault.OneAtATime \
           --deployment-group-name ${{ env.DEPLOYMENT_GROUP_NAME }} \
-          --s3-location bucket=${{ env.BUCKET_NAME }},bundleType=zip, key=${{ env.PROJECT_NAME }}/$GITHUB_SHA.zip
+          --s3-location bucket=${{ env.S3_BUCKET_NAME }},bundleType=zip, key=${{ env.PROJECT_NAME }}/$GITHUB_SHA.zip
