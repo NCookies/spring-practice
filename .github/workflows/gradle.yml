@@ -42,6 +42,7 @@ jobs:
       - name: Setup MySQL
         uses: samin/mysql-action@v1
         with:
+          container port: 3308
           character set server: 'utf8' 
           mysql database: 'board' 
           mysql user: 'root'
