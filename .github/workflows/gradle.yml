@@ -39,18 +39,8 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           
-      - name: Setup MySQL
-        uses: samin/mysql-action@v1
-        with:
-          container port: 3308
-          character set server: 'utf8' 
-          mysql database: 'board' 
-          mysql user: 'root'
-          mysql password: ${{ secrets.MYSQL_PASSWORD }}
-          
-          
       # create application-dev.properties
-      - name: Make application-aws.properties
+      - name: Make application-dev.properties
         if: contains(github.ref, 'master')
         run: |
           echo "mkdir & touch"
@@ -64,6 +54,14 @@ jobs:
         env:
           DEV_PROP: ${{ secrets.DEV_PROPERTIES }}
           
+      - name: Setup MySQL
+        uses: samin/mysql-action@v1
+        with:
+          container port: 3308
+          character set server: 'utf8' 
+          mysql database: 'board' 
+          mysql user: 'root'
+          mysql password: ${{ secrets.MYSQL_PASSWORD }}
 
       # gradlew 파일 실행권한 설정
       - name: Grant execute permission for gradlew
