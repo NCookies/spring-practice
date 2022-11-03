@@ -39,20 +39,18 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           
-      # create application-dev.properties
-      - name: Make application-dev.properties
-        if: contains(github.ref, 'master')
+      ## create application-database.yaml
+      - name: Make application-database.properties
         run: |
-          echo "mkdir & touch"
-          mkdir -p ./src/main/resources
+          ## create application-database.properties
           cd ./src/main/resources
-          touch ./application-dev.properties
-          echo "copy properties"
-          echo $DEV_PROP >> ./application-dev.properties
-          cat application-dev.properties
+
+          # application-database.properties 파일 생성
+          touch ./application.properties
+
+          # GitHub-Actions 에서 설정한 값을 application-database.properties 파일에 쓰기
+          echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./application.properties
         shell: bash
-        env:
-          DEV_PROP: ${{ secrets.DEV_PROPERTIES }}
           
       - name: Setup MySQL
         uses: samin/mysql-action@v1
