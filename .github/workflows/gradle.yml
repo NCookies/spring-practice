@@ -48,7 +48,18 @@ jobs:
           mysql user: 'root'
           mysql password: ${{ secrets.MYSQL_PASSWORD }}
 
-      # create application.properties
+      # gradlew 파일 실행권한 설정
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+        shell: bash
+
+      # Gradle build (Test 제외)
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        with:
+          arguments: build
+
+      # create application-aws.properties
       - name: Make application-aws.properties
         if: contains(github.ref, 'master')
         run: |
@@ -67,17 +78,6 @@ jobs:
         shell: bash
         env:
           DEV_PROP: ${{ secrets.PROPERTIES }}
-
-      # gradlew 파일 실행권한 설정
-      - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
-        shell: bash
-
-      # Gradle build (Test 제외)
-      - name: Build with Gradle
-        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
-        with:
-          arguments: build
 
       # AWS 인증 (IAM 사용자 Access Key, Secret Key 활용)
       - name: Configure AWS credentials
