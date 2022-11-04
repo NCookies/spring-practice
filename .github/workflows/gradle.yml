@@ -79,7 +79,7 @@ jobs:
           mysql-version: '8.0'
           user: root
           password: ${{ secrets.MYSQL_PASSWORD }}
-      - run: mysql -h127.0.0.1 -e 'SELECT version()'
+      - run: mysql -uroot -h127.0.0.1 -e 'SELECT version()'
 
 
       # gradlew 파일 실행권한 설정
