@@ -58,7 +58,7 @@ jobs:
           echo "spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver" >> ./application.properties
           
           echo "write 2"
-          echo "spring.datasource.url=jdbc:mysql://localhost:3308/board" >> ./application.properties
+          echo "spring.datasource.url=jdbc:mysql://localhost:3306/board" >> ./application.properties
           
           echo "write 3"
           echo "spring.datasource.username=root" >> ./application.properties
@@ -70,8 +70,6 @@ jobs:
       - name: Setup MySQL
         uses: samin/mysql-action@v1
         with:
-          container port: 3308
-          character set server: 'utf8' 
           mysql database: 'board' 
           mysql user: 'root'
           mysql password: ${{ secrets.MYSQL_PASSWORD }}
