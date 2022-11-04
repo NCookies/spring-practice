@@ -45,7 +45,7 @@ jobs:
           cd ./src/main/resources
           touch ./application.properties
           
-          echo "${{ secrets.DATABASE }}" >> ./application.properties
+          echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./application.properties
         shell: bash
           
       - name: Setup MySQL
@@ -76,10 +76,8 @@ jobs:
           touch ./application.properties
           
           echo "copy properties"
-          echo $DEV_PROP >> ./application.properties
+          echo "${{ secrets.AWS_DATABASE_PROPERTIES }}" >> ./application.properties
         shell: bash
-        env:
-          DEV_PROP: ${{ secrets.PROPERTIES }}
 
       # AWS 인증 (IAM 사용자 Access Key, Secret Key 활용)
       - name: Configure AWS credentials
