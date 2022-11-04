@@ -61,25 +61,25 @@ jobs:
           echo "spring.datasource.url=jdbc:mysql://localhost:3306/board" >> ./application.properties
           
           echo "write 3"
-          echo "spring.datasource.username=root" >> ./application.properties
+          echo "spring.datasource.username=test" >> ./application.properties
           
           echo "write 4"
-          echo "spring.datasource.password=root" >> ./application.properties
+          echo "spring.datasource.password=test" >> ./application.properties
         shell: bash
           
-#       - name: Setup MySQL
-#         uses: samin/mysql-action@v1
-#         with:
-#           mysql database: 'board' 
-#           mysql user: 'root'
-#           mysql password: ${{ secrets.MYSQL_PASSWORD }}
-      - name: actions-setup-mysql
-        uses: shogo82148/actions-setup-mysql@v1.13.0
+      - name: Setup MySQL
+        uses: samin/mysql-action@v1
         with:
-          mysql-version: '8.0'
-          user: root
-          password: ${{ secrets.MYSQL_PASSWORD }}
-      - run: mysql -uroot -h127.0.0.1 -e 'SELECT version()'
+          mysql database: 'board' 
+          mysql user: 'test'
+          mysql password: ${{ secrets.MYSQL_PASSWORD }}
+#       - name: actions-setup-mysql
+#         uses: shogo82148/actions-setup-mysql@v1.13.0
+#         with:
+#           mysql-version: '8.0'
+#           user: test
+#           password: ${{ secrets.MYSQL_PASSWORD }}
+#       - run: mysql -uroot -h127.0.0.1 -e 'SELECT version()'
 
 
       # gradlew 파일 실행권한 설정
