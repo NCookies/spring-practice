@@ -47,11 +47,13 @@ jobs:
           cd ./src/main/resources
 
           # application-database.properties 파일 생성
+          echo "ls"
+          ls -al
           echo "touch"
           touch ./application.properties
 
-          # GitHub-Actions 에서 설정한 값을 application-database.properties 파일에 쓰기
-          # echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./application.properties
+          echo "ls"
+          ls -al
           echo "write 1"
           echo "spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver" >> ./application.properties
           
