@@ -67,12 +67,20 @@ jobs:
           echo "spring.datasource.password=root" >> ./application.properties
         shell: bash
           
-      - name: Setup MySQL
-        uses: samin/mysql-action@v1
+#       - name: Setup MySQL
+#         uses: samin/mysql-action@v1
+#         with:
+#           mysql database: 'board' 
+#           mysql user: 'root'
+#           mysql password: ${{ secrets.MYSQL_PASSWORD }}
+      - name: actions-setup-mysql
+        uses: shogo82148/actions-setup-mysql@v1.13.0
         with:
-          mysql database: 'board' 
-          mysql user: 'root'
-          mysql password: ${{ secrets.MYSQL_PASSWORD }}
+          mysql-version: '8.0'
+          user: root
+          password: ${{ secrets.MYSQL_PASSWORD }}
+      - run: mysql -h127.0.0.1 -e 'SELECT version()'
+
 
       # gradlew 파일 실행권한 설정
       - name: Grant execute permission for gradlew
