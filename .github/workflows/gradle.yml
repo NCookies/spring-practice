@@ -49,7 +49,7 @@ jobs:
         shell: bash
           
       - name: Setup MySQL
-        uses: samin/mysql-action@v1
+        uses: mirromutth/mysql-action@v1.1
         with:
           mysql database: 'board' 
           mysql user: 'test'
