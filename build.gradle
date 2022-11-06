@@ -19,6 +19,8 @@ dependencies {
 	implementation 'mysql:mysql-connector-java'
 	implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.4.1'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	developmentOnly("org.springframework.boot:spring-boot-devtools")
 }
 
 tasks.named('test') {
