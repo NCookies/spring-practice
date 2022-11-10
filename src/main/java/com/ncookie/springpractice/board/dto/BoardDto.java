@@ -14,7 +14,7 @@ public class BoardDto {
     private String writer;
     private String title;
     private String content;
-    private LocalDateTime createdTime;
+    private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
     // dto에서 필요한 부분을 빌더패턴을 통해 entity로 만듦
@@ -34,12 +34,12 @@ public class BoardDto {
      * 그래서 Entity를 전달할 수 밖에 없었는데, 요점은 각 계층에서 필요한 객체전달은 Entity 객체가 아닌 dto 객체를 통해 주고받는 것이 좋다는 것
      */
     @Builder
-    public BoardDto(Long id, String writer, String title, String content, LocalDateTime createdTime, LocalDateTime modifiedDate) {
+    public BoardDto(Long id, String writer, String title, String content, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.writer = writer;
         this.title = title;
         this.content = content;
-        this.createdTime = createdTime;
+        this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
     }
 }
