@@ -39,13 +39,13 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           
-      # application.properties 파일 생성
-      - name: Make application.properties
+      # application.yml 파일 생성
+      - name: Make application.yml
         run: |
           cd ./src/main/resources
-          touch ./application.properties
+          touch ./application.yml
           
-          echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./application.properties
+          echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./application.yml
         shell: bash
           
       - name: Setup MySQL
@@ -65,18 +65,18 @@ jobs:
         run: ./gradlew clean --stacktrace --info build
         shell: bash
 
-      # create application-aws.properties
-      - name: Make application-aws.properties
+      # create application-aws.yml
+      - name: Make application-aws.yml
         if: contains(github.ref, 'master')
         run: |
           cd ./src/main/resources
-          rm ./application.properties
+          rm ./application.yml
           
           ls -al
-          touch ./application.properties
+          touch ./application.yml
           
           echo "copy properties"
-          echo "${{ secrets.AWS_DATABASE_PROPERTIES }}" >> ./application.properties
+          echo "${{ secrets.AWS_DATABASE_PROPERTIES }}" >> ./application.yml
         shell: bash
 
       # AWS 인증 (IAM 사용자 Access Key, Secret Key 활용)
