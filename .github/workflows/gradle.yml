@@ -70,13 +70,12 @@ jobs:
         if: contains(github.ref, 'master')
         run: |
           cd ./src/main/resources
-          rm ./application.yml
           
           ls -al
-          touch ./application.yml
+          touch ./application-aws.yml
           
           echo "copy properties"
-          echo "${{ secrets.AWS_DATABASE_PROPERTIES }}" >> ./application.yml
+          echo "${{ secrets.AWS_DATABASE_PROPERTIES }}" >> ./application-aws.yml
         shell: bash
 
       # AWS 인증 (IAM 사용자 Access Key, Secret Key 활용)
