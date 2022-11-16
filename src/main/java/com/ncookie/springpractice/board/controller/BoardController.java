@@ -15,11 +15,29 @@ public class BoardController {
 
     private final BoardService boardService;
 
+    @GetMapping("/test")
+    public String addTestData() {
+        for (int i = 0; i < 50; i++) {
+            BoardDto boardDto = new BoardDto();
+
+            boardDto.setId((long) (i + 1));
+            boardDto.setTitle("테스트" + (i + 1));
+            boardDto.setWriter("테스터 " + (i + 1));
+            boardDto.setContent("test");
+            boardService.savePost(boardDto);
+        }
+
+        return "redirect:/";
+    }
+
     @GetMapping("/")
-    public String list(Model model) {
-        List<BoardDto> boardDtoList = boardService.getBoardList();
+    public String list(Model model, @RequestParam(value = "page", defaultValue = "1") Integer pageNum) {
+        List<BoardDto> boardDtoList = boardService.getBoardList(pageNum);
+        Integer[] pageList = boardService.getPageList(pageNum);
 
         model.addAttribute("boardList", boardDtoList);
+        model.addAttribute("pageList", pageList);
+
         return "board/list";
     }
 
@@ -64,5 +82,13 @@ public class BoardController {
 
         return "redirect:/";
     }
-}
 
+    @GetMapping("/board/search")
+    public String search(@RequestParam(value = "keyword") String keyword, Model model) {
+        List<BoardDto> boardDtoList = boardService.searchPosts(keyword);
+
+        model.addAttribute("boardList", boardDtoList);
+
+        return "board/list";
+    }
+}
