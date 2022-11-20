@@ -19,8 +19,8 @@ import java.util.Optional;
 public class BoardService {
     private BoardRepository boardRepository;
 
-    private static final int BLOCK_PAGE_NUM_COUNT = 5;  // 블럭에 존재하는 페이지 번호 수
-    private static final int PAGE_POST_COUNT = 4;       // 한 페이지에 존재하는 게시글 수
+    private static final int BLOCK_PAGE_NUM_COUNT = 10;  // 블럭에 존재하는 페이지 번호 수
+    private static final int PAGE_POST_COUNT = 5;       // 한 페이지에 존재하는 게시글 수
 
     @Transactional
     public Long savePost(BoardDto boardDto) {
@@ -65,7 +65,7 @@ public class BoardService {
         curPageNum = (curPageNum <= 3) ? 1 : curPageNum - 2;
 
         // 페이지 번호 할당
-        for (int val = curPageNum, idx = 0; val <= blockLastPageNum; val++, idx++) {
+        for (int val = (curPageNum / 10) * 10 + 1, idx = 0; idx < BLOCK_PAGE_NUM_COUNT; val++, idx++) {
             pageList[idx] = val;
         }
 
