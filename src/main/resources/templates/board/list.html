@@ -11,6 +11,7 @@
 <div th:insert="common/header.html" id="header"></div>
 
 <a th:href="@{/post}">글쓰기</a>
+<a th:href="@{/test}">더미 데이터 추가</a>
 
 <table>
     <thead>
@@ -60,7 +61,9 @@
             </li>
 
             <!-- 페이지 번호 -->
-            <li th:each="page : ${#numbers.sequence(pageVo.startNumber, pageVo.endNumber)}">
+            <li th:each="page : ${#numbers.sequence(pageVo.startNumber, pageVo.endNumber)}"
+                th:classappend="${page == pageNo + 1} ? active"
+                class="page-item">
                 <a th:text="${page}" th:href="@{/(page = ${page})}"></a>
             </li>
 
@@ -79,17 +82,12 @@
     </div>
 </nav>
 
-<!-- 페이징 div -->
-<!--<div>-->
-<!--    <span th:each="pageNum : ${pageList}" th:inline="text">-->
-<!--        <a th:href="@{'/?page=' + ${pageNum}}">[[${pageNum}]]</a>-->
-<!--    </span>-->
-<!--</div>-->
-
 <!-- 검색 form -->
 <form action="/board/search" method="GET">
     <div>
-        <input name="keyword" type="text" placeholder="검색어를 입력해주세요">
+        <label>
+            <input name="keyword" type="text" placeholder="검색어를 입력해주세요">
+        </label>
     </div>
 
     <button>검색하기</button>
