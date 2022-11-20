@@ -1,8 +1,11 @@
 package com.ncookie.springpractice.board.controller;
 
 import com.ncookie.springpractice.board.dto.BoardDto;
+import com.ncookie.springpractice.board.entity.BoardEntity;
 import com.ncookie.springpractice.board.service.BoardService;
+import com.ncookie.springpractice.util.PageVo;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,26 +20,28 @@ public class BoardController {
 
     @GetMapping("/test")
     public String addTestData() {
-        for (int i = 0; i < 50; i++) {
-            BoardDto boardDto = new BoardDto();
-
-            boardDto.setId((long) (i + 1));
-            boardDto.setTitle("테스트" + (i + 1));
-            boardDto.setWriter("테스터 " + (i + 1));
-            boardDto.setContent("test");
-            boardService.savePost(boardDto);
+        for (int i = 0; i < 300; i++) {
+            boardService.savePost(BoardDto.from(new BoardEntity(
+                    (long) (i + 1),
+                    "테스트" + (i + 1),
+                    "테스터 " + (i + 1),
+                    "test"
+            )));
         }
 
         return "redirect:/";
     }
 
     @GetMapping("/")
-    public String list(Model model, @RequestParam(value = "page", defaultValue = "1") Integer pageNum) {
-        List<BoardDto> boardDtoList = boardService.getBoardList(pageNum);
-        Integer[] pageList = boardService.getPageList(pageNum);
+    public String readAllPost(Model model, @RequestParam(value = "page", defaultValue = "1") Integer pageNum) {
+        int pageNo = (pageNum == 0) ? 0 : pageNum - 1;
 
-        model.addAttribute("boardList", boardDtoList);
-        model.addAttribute("pageList", pageList);
+        Page<BoardDto> boardList = boardService.getBoardPageList(pageNo);
+        PageVo pageVo = boardService.getPageInfo(boardList, pageNo);
+
+        model.addAttribute("boardList", boardList);
+        model.addAttribute("pageNo", pageNo);
+        model.addAttribute("pageVo", pageVo);
 
         return "board/list";
     }

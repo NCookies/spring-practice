@@ -3,9 +3,11 @@ package com.ncookie.springpractice.board.service;
 import com.ncookie.springpractice.board.dto.BoardDto;
 import com.ncookie.springpractice.board.entity.BoardEntity;
 import com.ncookie.springpractice.board.repository.BoardRepository;
+import com.ncookie.springpractice.util.PageVo;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +21,7 @@ import java.util.Optional;
 public class BoardService {
     private BoardRepository boardRepository;
 
-    private static final int BLOCK_PAGE_NUM_COUNT = 10;  // 블럭에 존재하는 페이지 번호 수
-    private static final int PAGE_POST_COUNT = 5;       // 한 페이지에 존재하는 게시글 수
+    private static final int PAGE_POST_COUNT = 10;       // 한 페이지에 존재하는 게시글 수
 
     @Transactional
     public Long savePost(BoardDto boardDto) {
@@ -28,48 +29,31 @@ public class BoardService {
     }
 
     @Transactional
-    public List<BoardDto> getBoardList(Integer pageNum) {
-        Page<BoardEntity> page = boardRepository.findAll(PageRequest.of(pageNum - 1, PAGE_POST_COUNT,
-                Sort.by(Sort.Direction.ASC, "createdDate")));
+    public Page<BoardDto> getBoardPageList(int pageNo) {
 
-        List<BoardEntity> boardEntities = page.getContent();
-        List<BoardDto> boardDtoList = new ArrayList<>();
+        Pageable pageable = PageRequest.of(pageNo, PAGE_POST_COUNT, Sort.by(Sort.Direction.ASC, "id"));
 
-        for (BoardEntity boardEntity : boardEntities) {
-            boardDtoList.add(this.convertEntityToDto(boardEntity));
-        }
-
-        return boardDtoList;
+        Page<BoardEntity> page = boardRepository.findAll(pageable);
+        return page.map(BoardDto::from);
     }
 
-    @Transactional
-    public Long getBoardCount() {
-        return boardRepository.count();
-    }
+    public PageVo getPageInfo(Page<BoardDto> boardPageList, int pageNo) {
+        int totalPage = boardPageList.getTotalPages();
 
-    public Integer[] getPageList(Integer curPageNum) {
-        Integer[] pageList = new Integer[BLOCK_PAGE_NUM_COUNT];
+        // 현재 페이지를 통해 현재 페이지 그룹의 시작 페이지를 구함
+        int startNumber = (int)((Math.floor((double) pageNo / PAGE_POST_COUNT) * PAGE_POST_COUNT) + 1 <= totalPage
+                ? (Math.floor((double) pageNo / PAGE_POST_COUNT) * PAGE_POST_COUNT) + 1 : totalPage);
 
-        // 총 게시글 수
-        Double postsTotalCount = Double.valueOf(this.getBoardCount());
+        // 전체 페이지 수와 현재 페이지 그룹의 시작 페이지를 통해 현재 페이지 그룹의 마지막 페이지를 구함
+        int endNumber = (Math.min(startNumber + PAGE_POST_COUNT - 1, totalPage));
+        boolean hasPrev = boardPageList.hasPrevious();
+        boolean hasNext = boardPageList.hasNext();
 
-        // 총 게시글 기준으로 계산한 마지막 페이지 번호 계산 (올림으로 계산)
-        Integer totalLastPageNum = (int) (Math.ceil((postsTotalCount / PAGE_POST_COUNT)));
+        // 프론트에서는 원래 페이지의 인덱스 + 1로 출력됨
+        int prevIndex = boardPageList.previousOrFirstPageable().getPageNumber() + 1;
+        int nextIndex = boardPageList.nextOrLastPageable().getPageNumber() + 1;
 
-        // 현재 페이지를 기준으로 블럭의 마지막 페이지 번호 계산
-        Integer blockLastPageNum = (totalLastPageNum > curPageNum + BLOCK_PAGE_NUM_COUNT)
-                ? curPageNum + BLOCK_PAGE_NUM_COUNT
-                : totalLastPageNum;
-
-        // 페이지 시작 번호 조정
-        curPageNum = (curPageNum <= 3) ? 1 : curPageNum - 2;
-
-        // 페이지 번호 할당
-        for (int val = (curPageNum / 10) * 10 + 1, idx = 0; idx < BLOCK_PAGE_NUM_COUNT; val++, idx++) {
-            pageList[idx] = val;
-        }
-
-        return pageList;
+        return new PageVo(totalPage, startNumber, endNumber, hasPrev, hasNext, prevIndex, nextIndex);
     }
 
     @Transactional
@@ -77,7 +61,7 @@ public class BoardService {
         Optional<BoardEntity> boardEntityWrapper = boardRepository.findById(id);
         BoardEntity boardEntity = boardEntityWrapper.get();
 
-        return convertEntityToDto(boardEntity);
+        return BoardDto.from(boardEntity);
     }
 
     @Transactional
@@ -95,19 +79,9 @@ public class BoardService {
         }
 
         for (BoardEntity boardEntity : boardEntities) {
-            boardDtoList.add(this.convertEntityToDto(boardEntity));
+            boardDtoList.add(BoardDto.from(boardEntity));
         }
 
         return boardDtoList;
-    }
-
-    private BoardDto convertEntityToDto(BoardEntity boardEntity) {
-        return BoardDto.builder()
-                .id(boardEntity.getId())
-                .title(boardEntity.getTitle())
-                .content(boardEntity.getContent())
-                .writer(boardEntity.getWriter())
-                .createdDate(boardEntity.getCreatedDate())
-                .build();
     }
 }

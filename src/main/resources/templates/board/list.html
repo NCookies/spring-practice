@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Title</title>
+    <meta charset="UTF-8">
+    <title>Title</title>
 
-  <link rel="stylesheet" th:href="@{/css/board.css}">
+    <link rel="stylesheet" th:href="@{/css/board.css}">
 </head>
 <body>
 <!-- HEADER -->
@@ -13,50 +13,86 @@
 <a th:href="@{/post}">글쓰기</a>
 
 <table>
-  <thead>
-  <tr>
-    <th class="one wide">번호</th>
-    <th class="ten wide">글제목</th>
-    <th class="two wide">작성자</th>
-    <th class="three wide">작성일</th>
-  </tr>
-  </thead>
+    <thead>
+    <tr>
+        <th class="one wide">번호</th>
+        <th class="ten wide">글제목</th>
+        <th class="two wide">작성자</th>
+        <th class="three wide">작성일</th>
+    </tr>
+    </thead>
 
-  <tbody>
-  <!-- CONTENTS !-->
-  <tr th:each="board : ${boardList}">
-    <td>
-      <span th:text="${board.id}"></span>
-    </td>
-    <td>
-      <a th:href="@{'/post/' + ${board.id}}">
-        <span th:text="${board.title}"></span>
-      </a>
-    </td>
-    <td>
-      <span th:text="${board.writer}"></span>
-    </td>
-    <td>
-      <span th:text="${#temporals.format(board.createdDate, 'yyyy-MM-dd HH:mm')}"></span>
-    </td>
-  </tr>
-  </tbody>
+    <tbody>
+    <!-- CONTENTS !-->
+    <tr th:each="board : ${boardList}">
+        <td>
+            <span th:text="${board.id}"></span>
+        </td>
+        <td>
+            <a th:href="@{'/post/' + ${board.id}}">
+                <span th:text="${board.title}"></span>
+            </a>
+        </td>
+        <td>
+            <span th:text="${board.writer}"></span>
+        </td>
+        <td>
+            <span th:text="${#temporals.format(board.createdDate, 'yyyy-MM-dd HH:mm')}"></span>
+        </td>
+    </tr>
+    </tbody>
 </table>
 
+<!-- 페이지 영역 -->
+<nav th:if="${pageVo.totalPage != 0}">
+    <div class="container">
+        <ul>
+            <li class="page-item">
+                <!-- 첫 페이지로 이동 -->
+                <a th:href="@{'/?page=1'}"> << </a>
+            </li>
+
+            <li class="page-item active">
+                <!-- 이전 페이지 -->
+                <li th:if="${pageVo.hasPrev} ? 'disabled'">
+                    <a th:href="@{/(page = ${pageVo.prevIndex})}"> < </a>
+                <li>
+            </li>
+
+            <!-- 페이지 번호 -->
+            <li th:each="page : ${#numbers.sequence(pageVo.startNumber, pageVo.endNumber)}">
+                <a th:text="${page}" th:href="@{/(page = ${page})}"></a>
+            </li>
+
+            <li class="page-item">
+                <!-- 다음 페이지 -->
+                <li th:if="${pageVo.hasNext} ? 'disabled'">
+                    <a th:href="@{/(page = ${pageVo.nextIndex})}"> > </a>
+                <li>
+            </li>
+
+            <li class="page-item">
+                <!-- 마지막 페이지 -->
+                <a th:href="@{/(page = ${pageVo.totalPage})}"> >> </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
 <!-- 페이징 div -->
-<div>
-    <span th:each="pageNum : ${pageList}" th:inline="text">
-        <a th:href="@{'/?page=' + ${pageNum}}">[[${pageNum}]]</a>
-    </span>
-</div>
+<!--<div>-->
+<!--    <span th:each="pageNum : ${pageList}" th:inline="text">-->
+<!--        <a th:href="@{'/?page=' + ${pageNum}}">[[${pageNum}]]</a>-->
+<!--    </span>-->
+<!--</div>-->
 
 <!-- 검색 form -->
 <form action="/board/search" method="GET">
-  <div>
-    <input name="keyword" type="text" placeholder="검색어를 입력해주세요">
-  </div>
+    <div>
+        <input name="keyword" type="text" placeholder="검색어를 입력해주세요">
+    </div>
 
-  <button>검색하기</button>
+    <button>검색하기</button>
 </form>
 
 <!-- FOOTER -->
