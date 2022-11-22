@@ -10,6 +10,16 @@
 <!-- HEADER -->
 <div th:insert="common/header.html" id="header"></div>
 
+<!--로그인 기능 영역-->
+<div class="row">
+    <div class="col-md-6">
+        <a href="/posts/save" role="button" class="btn btn-primary">글 등록</a>
+        Logged in as : <span id="user" th:text="${userName}"></span>
+        <a href="/logout" class="btn btn-info active" role="button">Logout</a>
+        <a href="/oauth2/authorization/google" class="btn btn-success active" role="button">Google Login</a>
+    </div>
+</div>
+
 <a th:href="@{/post}">글쓰기</a>
 <a th:href="@{/test}">더미 데이터 추가</a>
 

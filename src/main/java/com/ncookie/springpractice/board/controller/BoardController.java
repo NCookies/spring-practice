@@ -3,6 +3,7 @@ package com.ncookie.springpractice.board.controller;
 import com.ncookie.springpractice.board.dto.BoardDto;
 import com.ncookie.springpractice.board.entity.BoardEntity;
 import com.ncookie.springpractice.board.service.BoardService;
+import com.ncookie.springpractice.config.auth.dto.SessionUserDto;
 import com.ncookie.springpractice.util.PageVo;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -17,6 +19,8 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
+
+    private final HttpSession httpSession;
 
     @GetMapping("/test")
     public String addTestData() {
@@ -38,6 +42,11 @@ public class BoardController {
 
         Page<BoardDto> boardList = boardService.getBoardPageList(pageNo);
         PageVo pageVo = boardService.getPageInfo(boardList, pageNo);
+
+        SessionUserDto user = (SessionUserDto) httpSession.getAttribute("user");
+        if (user != null) {
+            model.addAttribute("userName", user.getName());
+        }
 
         model.addAttribute("boardList", boardList);
         model.addAttribute("pageNo", pageNo);

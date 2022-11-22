@@ -18,7 +18,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'mysql:mysql-connector-java'
 	implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.4.1'
+	implementation('org.springframework.boot:spring-boot-starter-oauth2-client')
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
 
 	compileOnly 'org.projectlombok:lombok:1.18.24'
 	annotationProcessor 'org.projectlombok:lombok:1.18.24'

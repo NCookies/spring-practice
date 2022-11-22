@@ -1,4 +1,4 @@
-package com.ncookie.springpractice.board.entity;
+package com.ncookie.springpractice.util;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
